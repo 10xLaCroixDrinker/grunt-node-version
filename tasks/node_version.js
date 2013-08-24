@@ -9,6 +9,8 @@
 'use strict';
 
 var semver = require('semver'),
+    prompt = require('prompt'),
+    colors = require('colors'),
     childProcess = require('child_process');
 
 module.exports = function(grunt) {
@@ -17,45 +19,73 @@ module.exports = function(grunt) {
 
     var options = this.options({
       errorLevel: 'fatal', // Accepts 'fatal' or 'warn'
-      nvm: true
+      nvm: true,
+      alwaysInstall: false
     });
 
     var expected = grunt.file.readJSON('package.json').engines.node,
         actual = process.version,
-        result = semver.satisfies(actual, expected);
+        result = semver.satisfies(actual, expected),
+        done = this.async(),
+        task = options.task;
 
+    // Clean expected version
     if (expected[expected.length -1] === 'x') {
       expected = expected.split('.');
       expected.pop();
       expected = expected.join('.');
     }
 
+    // Validate options
     if (options.errorLevel != 'warn' &&
         options.errorLevel != 'fatal') {
       grunt.fail.warn('Expected node_version.options.errorLevel to be \'warn\' or \'fatal\', but found ' + options.errorLevel);
     }
     
+    // Check for engine version in package.json
     if (!expected) {
       grunt.fail.warn('You must define a Node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
     }
 
-    var nvmInstall = function(){
+    var askInstall = function() {
+      prompt.start();
+
+      var prop = {
+        name: 'yesno',
+        message: 'You do not have any Node versions installed that satisfy this project\'s requirements. Would you like to install the latest compatible version? (y/n)'.white,
+        validator: /y[es]*|n[o]?/,
+        required: true,
+        warning: 'Must respond yes or no'
+      };
+
+      prompt.get(prop, function (err, result) {
+        result = result.yesno
+        if (result === 'yes' ||
+            result === 'y') {
+          nvmInstall();
+        } else {
+          // Need some message here
+          grunt.fail.warn('');
+        }
+      });
+    
+    }
+    
+    var nvmInstall = function() {
       var command = '. ~/.nvm/nvm.sh && nvm install ' + expected,
           opts = {
             cwd: process.cwd(),
             env: process.env
           };
-      
+
       childProcess.exec(command, opts,function(err, stdout, stderr) {
         if (err) throw err;
-        grunt.log.write('Installed Node v' + expected + ' via nvm.');
-        nvmUse();
+        grunt.log.writeln(stdout)
+        done();
       });
     }
 
     var nvmUse = function() {
-      // Make sure a Node version is intalled that satisfies
-      // the projects required engine. If not, prompt to install.
       var command = '. ~/.nvm/nvm.sh && nvm use ' + expected,
           opts = {
             cwd: process.cwd(),
@@ -63,10 +93,17 @@ module.exports = function(grunt) {
           };
       
       childProcess.exec(command, opts,function(err, stdout, stderr) {
+        // Make sure a Node version is intalled that satisfies
+        // the projects required engine. If not, prompt to install.
         if (stdout.indexOf('N/A version is not installed yet') != -1) {
-          nvmInstall();
+          if (options.alwaysInstall) {
+            nvmInstall();
+          } else {
+            askInstall();
+          }
         } else {
-          grunt.log.write(stdout);
+          grunt.log.writeln(stdout);
+          done();
         }
       });
     };

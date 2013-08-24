@@ -40,6 +40,8 @@
     "gruntplugin"
   ],
   "dependencies": {
-    "semver": "~2.1.0"
+    "semver": "~2.1.0",
+    "prompt": "~0.2.11",
+    "colors": "~0.6.2"
   }
 }
