@@ -8,25 +8,56 @@
 
 'use strict';
 
+var semver = require('semver'),
+    childProcess = require('child_process');
+
 module.exports = function(grunt) {
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+  grunt.registerTask('node_version', 'A grunt task to ensure you are using the Node version required by your project\'s package.json', function() {
 
-  grunt.registerMultiTask('node_version', 'A grunt task to ensure you are using the Node version required by your project's package.json', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
-      errorLevel: 'fatal',
+      errorLevel: 'fatal', // Accepts 'fatal' or 'warn'
+      nvm: {
+        use: false,
+        install: false
+      }
     });
 
     var expected = grunt.file.readJSON('package.json').engines.node,
         actual = process.version,
-        result = semver.satisfies(actual, expected);
+        result = semver.satisfies(actual, expected),
+        cleanExpected = semver.clean(expected);
+
+    if (options.errorLevel != 'warn' &&
+        options.errorLevel != 'fatal') {
+      grunt.fail.warn('Expected node_version.options.errorLevel to be \'warn\' or \'fatal\', but found ' + options.errorLevel);
+    }
     
+    if (!expected) {
+      grunt.fail.warn('You must define a Node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
+    }
+
+    var nvmUse = function() {
+      var command = '. ~/.nvm/nvm.sh && nvm use 0.10',
+          opts = {
+            cwd: process.cwd(),
+            env: process.env
+          };
+      
+      childProcess.exec(command, opts,function(err, stdout, stderr) {
+        if (err) throw err;
+        grunt.log.write(stdout);
+      });
+    };
+
     if (result === true) {
       return;
     } else {
-      grunt.fail.fatal('Expected Node v' + expected + ', but found ' + actual);
+      if (!options.nvm.use) {
+        grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
+      } else {
+        nvmUse();
+      }
     }
 
   });
