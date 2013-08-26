@@ -20,6 +20,7 @@ module.exports = function(grunt) {
     var options = this.options({
       errorLevel: 'fatal', // Accepts 'fatal' or 'warn'
       nvm: true,
+      nvmPath: '~/.nvm/nvm.sh',
       alwaysInstall: false
     });
 
@@ -72,7 +73,7 @@ module.exports = function(grunt) {
     }
     
     var nvmInstall = function() {
-      var command = '. ~/.nvm/nvm.sh && nvm install ' + expected,
+      var command = 'source ' + nvmPath ' && nvm install ' + expected,
           opts = {
             cwd: process.cwd(),
             env: process.env
@@ -86,7 +87,7 @@ module.exports = function(grunt) {
     }
 
     var nvmUse = function() {
-      var command = '. ~/.nvm/nvm.sh && nvm use ' + expected,
+      var command = 'source ' + nvmPath + ' && nvm use ' + expected,
           opts = {
             cwd: process.cwd(),
             env: process.env
