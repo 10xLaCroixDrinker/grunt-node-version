@@ -10,31 +10,42 @@
 
 var semver = require('semver'),
     prompt = require('prompt'),
-    colors = require('colors'),
     childProcess = require('child_process');
 
 module.exports = function(grunt) {
 
   grunt.registerTask('node_version', 'A grunt task to ensure you are using the Node version required by your project\'s package.json', function() {
-
-    var options = this.options({
-      errorLevel: 'fatal', // Accepts 'fatal' or 'warn'
-      nvm: true,
-      nvmPath: '~/.nvm/nvm.sh',
-      alwaysInstall: false
-    });
-
+     
     var expected = grunt.file.readJSON('package.json').engines.node,
         actual = process.version,
         result = semver.satisfies(actual, expected),
         done = this.async(),
-        task = options.task;
+        options = this.options({
+          errorLevel: 'fatal',
+          extendExec: true,
+          nvm: true,
+          nvmPath: '~/.nvm/nvm.sh',
+          alwaysInstall: false
+        });
 
     // Clean expected version
-    if (expected[expected.length -1] === 'x') {
+    if (expected[expected.length - 1] === 'x') {
       expected = expected.split('.');
       expected.pop();
       expected = expected.join('.');
+    }
+  
+    var useCommand = 'source ' + options.nvmPath + ' && nvm use ' + expected;
+
+    // Extend grunt-exec
+    if (options.extendExec) {
+      var exec = grunt.config.get('exec');
+
+      for (var key in exec) {
+        exec[key].cmd = useCommand + ' && ' + exec[key].cmd;
+      }
+
+      grunt.config.set('exec', exec);
     }
 
     // Validate options
@@ -48,32 +59,33 @@ module.exports = function(grunt) {
       grunt.fail.warn('You must define a Node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
     }
 
+    // Prompt to install
     var askInstall = function() {
       prompt.start();
 
       var prop = {
         name: 'yesno',
-        message: 'You do not have any Node versions installed that satisfy this project\'s requirements. Would you like to install the latest compatible version? (y/n)'.white,
+        message: 'You do not have any Node versions installed that satisfy this project\'s requirements ('.white + expected.yellow + '). Would you like to install the latest compatible version? (y/n)'.white,
         validator: /y[es]*|n[o]?/,
         required: true,
         warning: 'Must respond yes or no'
       };
 
       prompt.get(prop, function (err, result) {
-        result = result.yesno
+        result = result.yesno.toLowerCase();
         if (result === 'yes' ||
             result === 'y') {
           nvmInstall();
         } else {
-          // Need some message here
-          grunt.fail.warn('');
+          grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
         }
       });
     
     }
-    
+
+    // Install latest compatible Node version
     var nvmInstall = function() {
-      var command = 'source ' + nvmPath ' && nvm install ' + expected,
+      var command = 'source ' + options.nvmPath + ' && nvm install ' + expected,
           opts = {
             cwd: process.cwd(),
             env: process.env
@@ -86,8 +98,9 @@ module.exports = function(grunt) {
       });
     }
 
+    // Check for compatible Node version
     var nvmUse = function() {
-      var command = 'source ' + nvmPath + ' && nvm use ' + expected,
+      var command = useCommand,
           opts = {
             cwd: process.cwd(),
             env: process.env
