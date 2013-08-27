@@ -26,6 +26,7 @@ In your project's Gruntfile, add a section named `node_version` to the data obje
 grunt.initConfig({
   node_version: {
     options: {
+      alwaysInstall: false,
       errorLevel: 'fatal',
       extendExec: true,
       nvm: true,
@@ -36,6 +37,12 @@ grunt.initConfig({
 ```
 
 ### Options
+
+#### options.alwaysInstall
+Type: `Boolean`
+Default value: `false`
+
+A boolean that determines whether to install the latest compatible version of Node without a prompt (default behavior prompts user to install).
 
 #### options.errorLevel
 Type: `String`
@@ -66,3 +73,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 0.1.0 First release
+0.1.1 Added `alwaysInstall` option
