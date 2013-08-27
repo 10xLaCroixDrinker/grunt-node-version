@@ -109,6 +109,9 @@ module.exports = function(grunt) {
       childProcess.exec(command, opts,function(err, stdout, stderr) {
         // Make sure a Node version is intalled that satisfies
         // the projects required engine. If not, prompt to install.
+        if (stderr.indexOf('No such file or directory') != -1) {
+          grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual + '\nNVM does not appear to be installed. Please install \(https://github.com/creationix/nvm#installation\), or update the NVM path.');
+        } 
         if (stdout.indexOf('N/A version is not installed yet') != -1) {
           if (options.alwaysInstall) {
             nvmInstall();
