@@ -24,8 +24,7 @@ module.exports = function(grunt) {
           errorLevel: 'fatal',
           extendExec: true,
           nvm: true,
-          nvmPath: '~/.nvm/nvm.sh',
-          alwaysInstall: false
+          nvmPath: '~/.nvm/nvm.sh'
         });
 
     // Clean expected version
@@ -113,11 +112,7 @@ module.exports = function(grunt) {
           grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual + '\nNVM does not appear to be installed. Please install \(https://github.com/creationix/nvm#installation\), or update the NVM path.');
         } 
         if (stdout.indexOf('N/A version is not installed yet') != -1) {
-          if (options.alwaysInstall) {
-            nvmInstall();
-          } else {
-            askInstall();
-          }
+          askInstall();
         } else {
           grunt.log.writeln(stdout);
           done();

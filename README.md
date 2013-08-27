@@ -26,64 +26,43 @@ In your project's Gruntfile, add a section named `node_version` to the data obje
 grunt.initConfig({
   node_version: {
     options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
+      errorLevel: 'fatal',
+      extendExec: true,
+      nvm: true,
+      nvmPath: '~/.nvm/nvm.sh'
+    }
+  }
 })
 ```
 
 ### Options
 
-#### options.separator
+#### options.errorLevel
 Type: `String`
-Default value: `',  '`
+Default value: `'fatal'`
 
-A string value that is used to do something with whatever.
+The level of error given when the wrong Node version is being used. Accepted values are `'warn'` and `'fatal'`. Warn can can be overidden with `--force`, fatal cannot.
 
-#### options.punctuation
+#### options.extendExec
+Type: `Boolean`
+Default value: `true`
+
+A boolean that determines if `grunt-node-version` should extend [`grunt-exec`](https://github.com/jharding/grunt-exec).
+
+#### options.nvm
+Type: `Boolean`
+Default value: `true`
+
+A boolean that determines whether to attempt to use/install a version of Node compatible with the project using [NVM](https://github.com/creationix/nvm). If set to `false`, the plugin will just print an error if the wrong Node version is being used.
+
+#### options.nvmPath
 Type: `String`
-Default value: `'.'`
+Default value: `'~/.nvm/nvm.sh'`
 
-A string value that is used to do something else with whatever else.
-
-### Usage Examples
-
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  node_version: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  node_version: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+A string that represents the path to your NVM install.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+0.1.0 First release
