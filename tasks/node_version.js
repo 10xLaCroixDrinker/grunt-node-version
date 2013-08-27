@@ -21,6 +21,7 @@ module.exports = function(grunt) {
         result = semver.satisfies(actual, expected),
         done = this.async(),
         options = this.options({
+          alwaysInstall: false,
           errorLevel: 'fatal',
           extendExec: true,
           nvm: true,
@@ -112,7 +113,11 @@ module.exports = function(grunt) {
           grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual + '\nNVM does not appear to be installed. Please install (https://github.com/creationix/nvm#installation), or update the NVM path.');
         } 
         if (stdout.indexOf('N/A version is not installed yet') !== -1) {
-          askInstall();
+          if (options.alwaysInstall) {
+            nvmInstall();
+          } else {
+            askInstall();
+          }
         } else {
           grunt.log.writeln(stdout);
           done();
