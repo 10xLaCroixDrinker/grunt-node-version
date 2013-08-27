@@ -37,7 +37,12 @@
     "grunt": "~0.4.1"
   },
   "keywords": [
-    "gruntplugin"
+    "gruntplugin",
+    "grunt",
+    "nvm",
+    "node",
+    "version",
+    "manager"
   ],
   "dependencies": {
     "semver": "~2.1.0",
