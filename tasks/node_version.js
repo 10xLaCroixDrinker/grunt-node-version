@@ -37,7 +37,7 @@ module.exports = function(grunt) {
     var useCommand = 'source ' + options.nvmPath + ' && nvm use ' + expected;
 
     // Extend grunt-exec
-    if (options.extendExec) {
+    if (options.extendExec && !result) {
       var exec = grunt.config.get('exec');
 
       for (var key in exec) {
@@ -121,7 +121,7 @@ module.exports = function(grunt) {
     };
 
     if (result === true) {
-      return;
+      done();
     } else {
       if (!options.nvm) {
         grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
