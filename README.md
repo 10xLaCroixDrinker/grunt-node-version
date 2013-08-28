@@ -27,8 +27,10 @@ grunt.initConfig({
   node_version: {
     options: {
       alwaysInstall: false,
+      copyPackages: true,
       errorLevel: 'fatal',
       extendExec: true,
+      maxBuffer: 200*1024,
       nvm: true,
       nvmPath: '~/.nvm/nvm.sh'
     }
@@ -44,6 +46,12 @@ Default value: `false`
 
 A boolean that determines whether to install the latest compatible version of Node without a prompt (default behavior prompts user to install).
 
+#### options.copyPackages
+Type: `Boolean`
+Default value: `true`
+
+A boolean that determines whether or not to copy globally installed packages  to a the new version of node after it's installed.
+
 #### options.errorLevel
 Type: `String`
 Default value: `'fatal'`
@@ -55,6 +63,12 @@ Type: `Boolean`
 Default value: `true`
 
 A boolean that determines if `grunt-node-version` should extend [`grunt-exec`](https://github.com/jharding/grunt-exec).
+
+#### options.maxBuffer
+Type: `Number`
+Default value: `200*1024`
+
+Specifies the largest amount of data allowed on stdout or stderr - if this value is exceeded then the child process is killed. If using older versions of Node or NVM, you may need to increase this number for successful installation.
 
 #### options.nvm
 Type: `Boolean`
@@ -72,5 +86,6 @@ A string that represents the path to your NVM install.
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-0.1.0 First release
-0.1.1 Added `alwaysInstall` option
+- 0.1.0 First release
+- 0.1.1 Added `alwaysInstall` option
+- 0.1.2 Added `copyPackages` and `maxBuffer` options

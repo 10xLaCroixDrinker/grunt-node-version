@@ -22,8 +22,10 @@ module.exports = function(grunt) {
         done = this.async(),
         options = this.options({
           alwaysInstall: false,
+          copyPackages: true,
           errorLevel: 'fatal',
           extendExec: true,
+          maxBuffer: 200*1024,
           nvm: true,
           nvmPath: '~/.nvm/nvm.sh'
         });
@@ -88,8 +90,13 @@ module.exports = function(grunt) {
       var command = 'source ' + options.nvmPath + ' && nvm install ' + expected,
           opts = {
             cwd: process.cwd(),
-            env: process.env
+            env: process.env,
+            maxBuffer: options.maxBuffer
           };
+
+      if (options.copyPackages) {
+        command += ' && nvm copy-packages ' + actual;
+      }
 
       childProcess.exec(command, opts,function(err, stdout, stderr) {
         if (err) { throw err ;}
@@ -103,7 +110,8 @@ module.exports = function(grunt) {
       var command = useCommand,
           opts = {
             cwd: process.cwd(),
-            env: process.env
+            env: process.env,
+            maxBuffer: options.maxBuffer
           };
       
       childProcess.exec(command, opts,function(err, stdout, stderr) {
