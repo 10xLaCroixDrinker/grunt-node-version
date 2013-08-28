@@ -30,6 +30,7 @@ grunt.initConfig({
       copyPackages: false,
       errorLevel: 'fatal',
       extendExec: true,
+      globals: [],
       maxBuffer: 200*1024,
       nvm: true,
       nvmPath: '~/.nvm/nvm.sh'
@@ -64,6 +65,12 @@ Default value: `true`
 
 A boolean that determines if `grunt-node-version` should extend [`grunt-exec`](https://github.com/jharding/grunt-exec).
 
+#### options.globals
+Type: `Array`
+Default value: `[]`
+
+An array of Node modules required to be installed globally for the project.
+
 #### options.maxBuffer
 Type: `Number`
 Default value: `200*1024`
@@ -88,4 +95,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 ## Release History
 - 0.1.0 First release
 - 0.1.1 Added `alwaysInstall` option
-- 0.1.2 Added `copyPackages` and `maxBuffer` options
+- 0.2.0 Added `copyPackages`, `globals` and `maxBuffer` options. Switched from `source` to `.`.

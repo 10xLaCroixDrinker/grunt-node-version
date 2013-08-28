@@ -25,10 +25,13 @@ module.exports = function(grunt) {
           copyPackages: false,
           errorLevel: 'fatal',
           extendExec: true,
+          globals: [],
           maxBuffer: 200*1024,
           nvm: true,
           nvmPath: '~/.nvm/nvm.sh'
-        });
+        }),
+        missingGlobals = [],
+        nvmInit = '. ' + options.nvmPath + ' && ';
 
     // Clean expected version
     if (expected[expected.length - 1] === 'x') {
@@ -37,7 +40,7 @@ module.exports = function(grunt) {
       expected = expected.join('.');
     }
   
-    var useCommand = 'source ' + options.nvmPath + ' && nvm use ' + expected;
+    var useCommand = nvmInit + 'nvm use ' + expected;
 
     // Extend grunt-exec
     if (options.extendExec && !result) {
@@ -59,6 +62,57 @@ module.exports = function(grunt) {
     // Check for engine version in package.json
     if (!expected) {
       grunt.fail.warn('You must define a Node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
+    }
+
+    // Check for globally required packages
+    var globalCheck = function() {
+      for (var package in options.globals) {
+        var command = useCommand,
+            opts = {
+              cwd: process.cwd(),
+              env: process.env,
+              maxBuffer: options.maxBuffer
+            };
+
+        command += ' && npm ls -g ' + package;
+
+        childProcess.exec(command, opts,function(err, stdout, stderr) {
+          if (err) { throw err ;}
+
+          if (stdout.indexOf('(empty)') !== -1) {
+            missingGlobals.push(package);
+          } else {
+            return;
+          }
+        });
+      }
+
+      if (missingGlobals) {
+        options.globals = missingGlobals;
+        globalInstall();
+      } else {
+        done();
+      }
+    }
+
+    // Install missing globals
+    var globalInstall = function() {
+      var command = useCommand,
+          opts = {
+            cwd: process.cwd(),
+            env: process.env,
+            maxBuffer: options.maxBuffer
+          };
+
+      for (var package in options.globals) {
+        command += ' && npm install -g ' + package;
+      }
+
+      childProcess.exec(command, opts,function(err, stdout, stderr) {
+        if (err) { throw err ;}
+        grunt.log.writeln(stdout);
+        done();
+      });
     }
 
     // Prompt to install
@@ -87,7 +141,7 @@ module.exports = function(grunt) {
 
     // Install latest compatible Node version
     var nvmInstall = function() {
-      var command = 'source ' + options.nvmPath + ' && nvm install ' + expected,
+      var command = nvmInit + 'nvm install ' + expected,
           opts = {
             cwd: process.cwd(),
             env: process.env,
@@ -101,7 +155,12 @@ module.exports = function(grunt) {
       childProcess.exec(command, opts,function(err, stdout, stderr) {
         if (err) { throw err ;}
         grunt.log.writeln(stdout);
-        done();
+
+        if (options.globals) {
+          globalInstall();
+        } else {
+          done();
+        }
       });
     };
 
@@ -128,13 +187,21 @@ module.exports = function(grunt) {
           }
         } else {
           grunt.log.writeln(stdout);
-          done();
+          if (options.globals) {
+            globalCheck();
+          } else {
+            done();
+          }
         }
       });
     };
 
     if (result === true) {
-      done();
+      if (options.globals) {
+        globalCheck();
+      } else {
+        done();
+      }
     } else {
       if (!options.nvm) {
         grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
