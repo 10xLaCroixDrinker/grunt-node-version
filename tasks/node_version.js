@@ -31,7 +31,6 @@ module.exports = function(grunt) {
           nvm: true,
           nvmPath: home + '/.nvm/nvm.sh'
         }),
-        missingGlobals = [],
         nvmInit = '. ' + options.nvmPath + ' && ',
         cmdOpts = {
           cwd: process.cwd(),
