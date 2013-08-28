@@ -27,7 +27,7 @@ grunt.initConfig({
   node_version: {
     options: {
       alwaysInstall: false,
-      copyPackages: true,
+      copyPackages: false,
       errorLevel: 'fatal',
       extendExec: true,
       maxBuffer: 200*1024,
@@ -48,7 +48,7 @@ A boolean that determines whether to install the latest compatible version of No
 
 #### options.copyPackages
 Type: `Boolean`
-Default value: `true`
+Default value: `false`
 
 A boolean that determines whether or not to copy globally installed packages  to a the new version of node after it's installed.
 

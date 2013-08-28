@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         done = this.async(),
         options = this.options({
           alwaysInstall: false,
-          copyPackages: true,
+          copyPackages: false,
           errorLevel: 'fatal',
           extendExec: true,
           maxBuffer: 200*1024,
