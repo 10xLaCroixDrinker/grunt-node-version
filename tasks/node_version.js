@@ -31,8 +31,12 @@ module.exports = function(grunt) {
           nvm: true,
           nvmPath: home + '/.nvm/nvm.sh'
         }),
-        missingGlobals = [],
-        nvmInit = '. ' + options.nvmPath + ' && ';
+        nvmInit = '. ' + options.nvmPath + ' && ',
+        cmdOpts = {
+          cwd: process.cwd(),
+          env: process.env,
+          maxBuffer: options.maxBuffer
+        };
 
     // Clean expected version
     if (expected[expected.length - 1] === 'x') {
@@ -68,29 +72,21 @@ module.exports = function(grunt) {
     // Check for globally required packages
     var globalCheck = function() {
 
+      var checkPackage = function (thisPackage) {
+        var command = useCommand + ' && npm ls -g ' + thisPackage;
+
+        childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
+          if (err) { throw err ;}
+
+          if (stdout.indexOf('─ (empty)') !== -1) {
+            globalInstall(thisPackage);
+          } else {
+            return;
+          }
+        });
+      };
+
       for (var i = 0; i < options.globals.length; i++) {        
-
-        var command = useCommand,
-            opts = {
-              cwd: process.cwd(),
-              env: process.env,
-              maxBuffer: options.maxBuffer
-            };
-        
-        command += ' && npm ls -g ' + options.globals[i];
-
-        var checkPackage = function (thisPackage) {
-          childProcess.exec(command, opts,function(err, stdout, stderr) {
-            if (err) { throw err ;}
-
-            if (stdout.indexOf('─ (empty)') !== -1) {
-              globalInstall(thisPackage);
-            } else {
-              return;
-            }
-          });
-        };
-
         checkPackage(options.globals[i]);
       }
 
@@ -99,14 +95,9 @@ module.exports = function(grunt) {
 
     // Install missing globals
     var globalInstall = function(thisPackage) {
-      var command = useCommand + ' && npm install -g ' + thisPackage,
-          opts = {
-            cwd: process.cwd(),
-            env: process.env,
-            maxBuffer: options.maxBuffer
-          };
+      var command = useCommand + ' && npm install -g ' + thisPackage;
 
-      childProcess.exec(command, opts,function(err, stdout, stderr) {
+      childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
         if (err) { throw err ;}
         grunt.log.writeln(stdout);
       });
@@ -138,18 +129,13 @@ module.exports = function(grunt) {
 
     // Install latest compatible Node version
     var nvmInstall = function() {
-      var command = nvmInit + 'nvm install ' + expected,
-          opts = {
-            cwd: process.cwd(),
-            env: process.env,
-            maxBuffer: options.maxBuffer
-          };
+      var command = nvmInit + 'nvm install ' + expected;
 
       if (options.copyPackages) {
         command += ' && nvm copy-packages ' + actual;
       }
 
-      childProcess.exec(command, opts,function(err, stdout, stderr) {
+      childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
         if (err) { throw err ;}
         grunt.log.writeln(stdout);
 
@@ -163,14 +149,7 @@ module.exports = function(grunt) {
 
     // Check for compatible Node version
     var nvmUse = function() {
-      var command = useCommand,
-          opts = {
-            cwd: process.cwd(),
-            env: process.env,
-            maxBuffer: options.maxBuffer
-          };
-      
-      childProcess.exec(command, opts,function(err, stdout, stderr) {
+      childProcess.exec(useCommand, cmdOpts,function(err, stdout, stderr) {
         // Make sure a Node version is intalled that satisfies
         // the projects required engine. If not, prompt to install.
         if (stderr.indexOf('No such file or directory') !== -1) {
