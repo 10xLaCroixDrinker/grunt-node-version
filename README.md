@@ -96,3 +96,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 0.1.0 First release
 - 0.1.1 Added `alwaysInstall` option
 - 0.2.0 Added `copyPackages`, `globals` and `maxBuffer` options. Switched from `source` to `.`.
+- 0.2.1 Made more portable by switching from `~` to `process.env.HOME`
