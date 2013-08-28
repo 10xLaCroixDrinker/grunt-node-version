@@ -66,54 +66,50 @@ module.exports = function(grunt) {
 
     // Check for globally required packages
     var globalCheck = function() {
-      for (var package in options.globals) {
+
+      for (var i = 0; i < options.globals.length; i++) {        
+
         var command = useCommand,
             opts = {
               cwd: process.cwd(),
               env: process.env,
               maxBuffer: options.maxBuffer
             };
+        
+        command += ' && npm ls -g ' + options.globals[i];
 
-        command += ' && npm ls -g ' + package;
+        var checkPackage = function (thisPackage) {
+          childProcess.exec(command, opts,function(err, stdout, stderr) {
+            if (err) { throw err ;}
 
-        childProcess.exec(command, opts,function(err, stdout, stderr) {
-          if (err) { throw err ;}
+            if (stdout.indexOf('─ (empty)') !== -1) {
+              globalInstall(thisPackage);
+            } else {
+              return;
+            }
+          });
+        };
 
-          if (stdout.indexOf('(empty)') !== -1) {
-            missingGlobals.push(package);
-          } else {
-            return;
-          }
-        });
+        checkPackage(options.globals[i]);
       }
 
-      if (missingGlobals) {
-        options.globals = missingGlobals;
-        globalInstall();
-      } else {
-        done();
-      }
-    }
+      done();
+    };
 
     // Install missing globals
-    var globalInstall = function() {
-      var command = useCommand,
+    var globalInstall = function(thisPackage) {
+      var command = useCommand + ' && npm install -g ' + thisPackage,
           opts = {
             cwd: process.cwd(),
             env: process.env,
             maxBuffer: options.maxBuffer
           };
 
-      for (var package in options.globals) {
-        command += ' && npm install -g ' + package;
-      }
-
       childProcess.exec(command, opts,function(err, stdout, stderr) {
         if (err) { throw err ;}
         grunt.log.writeln(stdout);
-        done();
       });
-    }
+    };
 
     // Prompt to install
     var askInstall = function() {
@@ -156,11 +152,11 @@ module.exports = function(grunt) {
         if (err) { throw err ;}
         grunt.log.writeln(stdout);
 
-        if (options.globals) {
-          globalInstall();
-        } else {
-          done();
+        for (var i = 0; i < options.globals.length; i++) {
+          globalInstall(options.globals[i]);
         }
+
+        done();
       });
     };
 
