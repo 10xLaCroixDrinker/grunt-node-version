@@ -22,11 +22,16 @@ module.exports = function(grunt) {
         done = this.async(),
         options = this.options({
           alwaysInstall: false,
+          copyPackages: false,
           errorLevel: 'fatal',
           extendExec: true,
+          globals: [],
+          maxBuffer: 200*1024,
           nvm: true,
           nvmPath: '~/.nvm/nvm.sh'
-        });
+        }),
+        missingGlobals = [],
+        nvmInit = '. ' + options.nvmPath + ' && ';
 
     // Clean expected version
     if (expected[expected.length - 1] === 'x') {
@@ -35,7 +40,7 @@ module.exports = function(grunt) {
       expected = expected.join('.');
     }
   
-    var useCommand = 'source ' + options.nvmPath + ' && nvm use ' + expected;
+    var useCommand = nvmInit + 'nvm use ' + expected;
 
     // Extend grunt-exec
     if (options.extendExec && !result) {
@@ -58,6 +63,53 @@ module.exports = function(grunt) {
     if (!expected) {
       grunt.fail.warn('You must define a Node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
     }
+
+    // Check for globally required packages
+    var globalCheck = function() {
+
+      for (var i = 0; i < options.globals.length; i++) {        
+
+        var command = useCommand,
+            opts = {
+              cwd: process.cwd(),
+              env: process.env,
+              maxBuffer: options.maxBuffer
+            };
+        
+        command += ' && npm ls -g ' + options.globals[i];
+
+        var checkPackage = function (thisPackage) {
+          childProcess.exec(command, opts,function(err, stdout, stderr) {
+            if (err) { throw err ;}
+
+            if (stdout.indexOf('─ (empty)') !== -1) {
+              globalInstall(thisPackage);
+            } else {
+              return;
+            }
+          });
+        };
+
+        checkPackage(options.globals[i]);
+      }
+
+      done();
+    };
+
+    // Install missing globals
+    var globalInstall = function(thisPackage) {
+      var command = useCommand + ' && npm install -g ' + thisPackage,
+          opts = {
+            cwd: process.cwd(),
+            env: process.env,
+            maxBuffer: options.maxBuffer
+          };
+
+      childProcess.exec(command, opts,function(err, stdout, stderr) {
+        if (err) { throw err ;}
+        grunt.log.writeln(stdout);
+      });
+    };
 
     // Prompt to install
     var askInstall = function() {
@@ -85,15 +137,25 @@ module.exports = function(grunt) {
 
     // Install latest compatible Node version
     var nvmInstall = function() {
-      var command = 'source ' + options.nvmPath + ' && nvm install ' + expected,
+      var command = nvmInit + 'nvm install ' + expected,
           opts = {
             cwd: process.cwd(),
-            env: process.env
+            env: process.env,
+            maxBuffer: options.maxBuffer
           };
+
+      if (options.copyPackages) {
+        command += ' && nvm copy-packages ' + actual;
+      }
 
       childProcess.exec(command, opts,function(err, stdout, stderr) {
         if (err) { throw err ;}
         grunt.log.writeln(stdout);
+
+        for (var i = 0; i < options.globals.length; i++) {
+          globalInstall(options.globals[i]);
+        }
+
         done();
       });
     };
@@ -103,7 +165,8 @@ module.exports = function(grunt) {
       var command = useCommand,
           opts = {
             cwd: process.cwd(),
-            env: process.env
+            env: process.env,
+            maxBuffer: options.maxBuffer
           };
       
       childProcess.exec(command, opts,function(err, stdout, stderr) {
@@ -120,13 +183,21 @@ module.exports = function(grunt) {
           }
         } else {
           grunt.log.writeln(stdout);
-          done();
+          if (options.globals) {
+            globalCheck();
+          } else {
+            done();
+          }
         }
       });
     };
 
     if (result === true) {
-      done();
+      if (options.globals) {
+        globalCheck();
+      } else {
+        done();
+      }
     } else {
       if (!options.nvm) {
         grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
