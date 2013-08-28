@@ -20,6 +20,7 @@ module.exports = function(grunt) {
         actual = process.version,
         result = semver.satisfies(actual, expected),
         done = this.async(),
+        home = process.env.HOME,
         options = this.options({
           alwaysInstall: false,
           copyPackages: false,
@@ -28,7 +29,7 @@ module.exports = function(grunt) {
           globals: [],
           maxBuffer: 200*1024,
           nvm: true,
-          nvmPath: '~/.nvm/nvm.sh'
+          nvmPath: home + '/.nvm/nvm.sh'
         }),
         missingGlobals = [],
         nvmInit = '. ' + options.nvmPath + ' && ';
