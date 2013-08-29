@@ -14,7 +14,7 @@ var semver = require('semver'),
 
 module.exports = function(grunt) {
 
-  grunt.registerTask('node_version', 'A grunt task to ensure you are using the Node version required by your project\'s package.json', function() {
+  grunt.registerTask('node_version', 'A grunt task to ensure you are using the node version required by your project\'s package.json', function() {
      
     var expected = grunt.file.readJSON('package.json').engines.node,
         actual = process.version,
@@ -62,8 +62,13 @@ module.exports = function(grunt) {
     
     // Check for engine version in package.json
     if (!expected) {
-      grunt.fail.warn('You must define a Node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
+      grunt.fail.warn('You must define a node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
     }
+
+    var printVersion = function(using) {
+      grunt.log.write('Switched from node ' + actual + ' to ' + using);
+      grunt.log.writeln('(Project requires node v' + expected + ')');
+    };
 
     // Check for globally required packages
     var checkPackages = function (packages) {
@@ -97,7 +102,8 @@ module.exports = function(grunt) {
 
       childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
         if (err) { throw err ;}
-        grunt.log.writeln('Installed ' + thisPackage);
+        grunt.verbose.writeln(stdout);
+        grunt.log.oklns('Installed ' + thisPackage);
         callback();
       });
     };
@@ -108,7 +114,7 @@ module.exports = function(grunt) {
 
       var prop = {
         name: 'yesno',
-        message: 'You do not have any Node versions installed that satisfy this project\'s requirements ('.white + expected.yellow + '). Would you like to install the latest compatible version? (y/n)'.white,
+        message: 'You do not have any node versions installed that satisfy this project\'s requirements ('.white + expected.yellow + '). Would you like to install the latest compatible version? (y/n)'.white,
         validator: /y[es]*|n[o]?/,
         required: true,
         warning: 'Must respond yes or no'
@@ -120,13 +126,13 @@ module.exports = function(grunt) {
             result === 'y') {
           nvmInstall();
         } else {
-          grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
+          grunt[options.errorLevel]('Expected node v' + expected + ', but found ' + actual);
         }
       });
     
     };
 
-    // Install latest compatible Node version
+    // Install latest compatible node version
     var nvmInstall = function() {
       var command = nvmInit + 'nvm install ' + expected;
 
@@ -136,18 +142,20 @@ module.exports = function(grunt) {
 
       childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
         if (err) { throw err ;}
-        grunt.log.writeln(stdout);
+        var nodeVersion = stdout.split(' ')[3];
+        grunt.log.ok('Installed node ' + nodeVersion);
+        printVersion(nodeVersion);
         checkPackages(options.globals);
       });
     };
 
-    // Check for compatible Node version
+    // Check for compatible node version
     var checkVersion = function() {
       childProcess.exec(nvmUse, cmdOpts,function(err, stdout, stderr) {
-        // Make sure a Node version is intalled that satisfies
+        // Make sure a node version is intalled that satisfies
         // the projects required engine. If not, prompt to install.
         if (stderr.indexOf('No such file or directory') !== -1) {
-          grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual + '\nNVM does not appear to be installed. Please install (https://github.com/creationix/nvm#installation), or update the NVM path.');
+          grunt[options.errorLevel]('Expected node v' + expected + ', but found ' + actual + '\nNVM does not appear to be installed.\nPlease install (https://github.com/creationix/nvm#installation), or update the NVM path.');
         } 
         if (stdout.indexOf('N/A version is not installed yet') !== -1) {
           if (options.alwaysInstall) {
@@ -156,7 +164,7 @@ module.exports = function(grunt) {
             askInstall();
           }
         } else {
-          grunt.log.writeln(stdout);
+          printVersion(stdout.split(' ')[3]);
           checkPackages(options.globals);
         }
       });
@@ -166,7 +174,7 @@ module.exports = function(grunt) {
       checkPackages(options.globals);
     } else {
       if (!options.nvm) {
-        grunt.fail[options.errorLevel]('Expected Node v' + expected + ', but found ' + actual);
+        grunt[options.errorLevel]('Expected node v' + expected + ', but found ' + actual);
       } else {
         checkVersion();
       }
