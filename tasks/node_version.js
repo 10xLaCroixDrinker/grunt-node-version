@@ -171,6 +171,8 @@ module.exports = function(grunt) {
     };
 
     if (result === true) {
+      grunt.log.writeln('Using node ' + actual);
+      grunt.log.writeln('(Project requires node v' + expected + ')');
       checkPackages(options.globals);
     } else {
       if (!options.nvm) {
