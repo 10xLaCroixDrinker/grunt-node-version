@@ -98,3 +98,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 0.2.0 Added `copyPackages`, `globals` and `maxBuffer` options. Switched from `source` to `.`
 - 0.2.1 Made more portable by switching from `~` to `process.env.HOME`
 - 0.2.2 Some code cleaning
+- 0.2.3 Efficiency changes
