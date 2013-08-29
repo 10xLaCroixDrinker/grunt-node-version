@@ -99,3 +99,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 0.2.1 Made more portable by switching from `~` to `process.env.HOME`
 - 0.2.2 Some code cleaning
 - 0.2.3 Efficiency changes
+- 0.2.4 Better logging
