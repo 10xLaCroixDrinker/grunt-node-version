@@ -34,7 +34,8 @@ module.exports = function(grunt) {
           globals: [],
           maxBuffer: 200*1024,
           nvm: true,
-          nvmPath: home + '/.nvm/nvm.sh'
+          nvmPath: home + '/.nvm/nvm.sh',
+          override: ''
         }),
         nvmInit = '. ' + options.nvmPath + ' && ',
         cmdOpts = {
@@ -43,8 +44,10 @@ module.exports = function(grunt) {
           maxBuffer: options.maxBuffer
         };
 
-    // Clean '.x' from expected version
-    //expected = expected.replace(/(\d+\.\d+)+.x/g,'$1');
+    // Apply override if specified
+    if (options.override) {
+      expected = semver.validRange(options.override);
+    }
 
     // Extend grunt-exec
     var extendExec = function() {
