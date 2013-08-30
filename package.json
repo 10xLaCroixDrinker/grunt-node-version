@@ -1,7 +1,7 @@
 {
   "name": "grunt-node-version",
   "description": "A grunt task to ensure you are using the node version required by your project's package.json",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "homepage": "https://github.com/jking90/grunt-node-version",
   "author": {
     "name": "Jimmy King",
@@ -46,6 +46,7 @@
   ],
   "dependencies": {
     "semver": "~2.1.0",
-    "prompt": "~0.2.11"
+    "prompt": "~0.2.11",
+    "stripcolorcodes": "~0.1.0"
   }
 }
