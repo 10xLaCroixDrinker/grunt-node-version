@@ -60,7 +60,7 @@ module.exports = function(grunt) {
   
         grunt.config.set('exec', exec);
       }
-    }
+    };
 
     // Validate options
     if (options.errorLevel !== 'warn' &&
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
     var nvmInstall = function() {
       nvmLs('remote', function() {
 
-        bestMatch = semver.maxSatisfying(remotes, expected),
+        bestMatch = semver.maxSatisfying(remotes, expected);
         nvmUse = nvmInit + 'nvm use ' + bestMatch;
 
         var command = nvmInit + 'nvm install ' + bestMatch;
@@ -161,7 +161,7 @@ module.exports = function(grunt) {
           extendExec();
           checkPackages(options.globals);
         });
-      })
+      });
     };
 
     // Check for available node versions
@@ -196,7 +196,7 @@ module.exports = function(grunt) {
         }
         
         callback();
-      })
+      });
     };
 
     // Check for compatible node version
@@ -207,14 +207,14 @@ module.exports = function(grunt) {
         var matches = semver.maxSatisfying(locals, expected);
 
         if (matches) {
-          bestMatch = matches,
+          bestMatch = matches;
           nvmUse = nvmInit + 'nvm use ' + bestMatch;
 
           childProcess.exec(nvmUse, cmdOpts,function(err, stdout, stderr) {
             printVersion(stdout.split(' ')[3]);
             extendExec();
             checkPackages(options.globals);
-          })
+          });
         } else {
           if (options.alwaysInstall) {
             nvmInstall();
