@@ -1,6 +1,6 @@
-# grunt-node-version
+# grunt-nnode-version
 
-> A grunt task to ensure you are using the Node version required by your project's package.json
+> A grunt task to ensure you are using the node version required by your project's package.json
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
@@ -33,7 +33,8 @@ grunt.initConfig({
       globals: [],
       maxBuffer: 200*1024,
       nvm: true,
-      nvmPath: '~/.nvm/nvm.sh'
+      nvmPath: '~/.nvm/nvm.sh',
+      override: ''
     }
   }
 })
@@ -45,7 +46,7 @@ grunt.initConfig({
 Type: `Boolean`
 Default value: `false`
 
-A boolean that determines whether to install the latest compatible version of Node without a prompt (default behavior prompts user to install).
+A boolean that determines whether to install the latest compatible version of node without a prompt (default behavior prompts user to install). This is primarily intended to be used for deployment.
 
 #### options.copyPackages
 Type: `Boolean`
@@ -57,7 +58,7 @@ A boolean that determines whether or not to copy globally installed packages  to
 Type: `String`
 Default value: `'fatal'`
 
-The level of error given when the wrong Node version is being used. Accepted values are `'warn'` and `'fatal'`. Warn can can be overidden with `--force`, fatal cannot.
+The level of error given when the wrong node version is being used. Accepted values are `'warn'` and `'fatal'`. Warn can can be overidden with `--force`, fatal cannot.
 
 #### options.extendExec
 Type: `Boolean`
@@ -69,25 +70,31 @@ A boolean that determines if `grunt-node-version` should extend [`grunt-exec`](h
 Type: `Array`
 Default value: `[]`
 
-An array of Node modules required to be installed globally for the project.
+An array of node modules required to be installed globally for the project.
 
 #### options.maxBuffer
 Type: `Number`
 Default value: `200*1024`
 
-Specifies the largest amount of data allowed on stdout or stderr - if this value is exceeded then the child process is killed. If using older versions of Node or NVM, you may need to increase this number for successful installation.
+Specifies the largest amount of data allowed on stdout or stderr - if this value is exceeded then the child process is killed. If using older versions of node or NVM, you may need to increase this number for successful installation.
 
 #### options.nvm
 Type: `Boolean`
 Default value: `true`
 
-A boolean that determines whether to attempt to use/install a version of Node compatible with the project using [NVM](https://github.com/creationix/nvm). If set to `false`, the plugin will just print an error if the wrong Node version is being used.
+A boolean that determines whether to attempt to use/install a version of node compatible with the project using [NVM](https://github.com/creationix/nvm). If set to `false`, the plugin will just print an error if the wrong node version is being used.
 
 #### options.nvmPath
 Type: `String`
 Default value: `'~/.nvm/nvm.sh'`
 
 A string that represents the path to your NVM install.
+
+#### options.override
+Type: `String`
+Default value: `''`
+
+If you want to override the version specified in your project's `package.json`, specify the version you want to use instead here. This is primarily intended for testing projects on other versions of node.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
@@ -101,3 +108,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 0.2.3 Efficiency changes
 - 0.2.4 Better logging
 - 0.3.0 Added support for version ranges
+- 0.3.1 Added `override` option
