@@ -10,17 +10,22 @@
 
 var semver = require('semver'),
     prompt = require('prompt'),
+    stripColorCodes = require('stripcolorcodes'),
     childProcess = require('child_process');
 
 module.exports = function(grunt) {
 
   grunt.registerTask('node_version', 'A grunt task to ensure you are using the node version required by your project\'s package.json', function() {
-     
-    var expected = grunt.file.readJSON('package.json').engines.node,
-        actual = process.version,
+
+    var expected = semver.validRange(grunt.file.readJSON('package.json').engines.node),
+        actual = semver.valid(process.version),
         result = semver.satisfies(actual, expected),
         done = this.async(),
         home = process.env.HOME,
+        locals = [],
+        remotes = [],
+        bestMatch = '',
+        nvmUse = '',
         options = this.options({
           alwaysInstall: false,
           copyPackages: false,
@@ -39,19 +44,19 @@ module.exports = function(grunt) {
         };
 
     // Clean '.x' from expected version
-    expected = expected.replace(/(\d+\.\d+)+.x/g,'$1');
-
-    var nvmUse = nvmInit + 'nvm use ' + expected;
+    //expected = expected.replace(/(\d+\.\d+)+.x/g,'$1');
 
     // Extend grunt-exec
-    if (options.extendExec && !result) {
-      var exec = grunt.config.get('exec');
-
-      for (var key in exec) {
-        exec[key].cmd = nvmUse + ' && ' + exec[key].cmd;
+    var extendExec = function() {
+      if (options.extendExec && !result) {
+        var exec = grunt.config.get('exec');
+  
+        for (var key in exec) {
+          exec[key].cmd = nvmUse + ' && ' + exec[key].cmd;
+        }
+  
+        grunt.config.set('exec', exec);
       }
-
-      grunt.config.set('exec', exec);
     }
 
     // Validate options
@@ -59,15 +64,15 @@ module.exports = function(grunt) {
         options.errorLevel !== 'fatal') {
       grunt.fail.warn('Expected node_version.options.errorLevel to be \'warn\' or \'fatal\', but found ' + options.errorLevel);
     }
-    
+
     // Check for engine version in package.json
     if (!expected) {
       grunt.fail.warn('You must define a node verision in your project\'s `package.json` file.\nhttps://npmjs.org/doc/json.html#engines');
     }
 
     var printVersion = function(using) {
-      grunt.log.write('Switched from node ' + actual + ' to ' + using);
-      grunt.log.writeln('(Project requires node v' + expected + ')');
+      grunt.log.write('Switched from node v' + actual + ' to ' + using);
+      grunt.log.writeln('(Project requires node ' + expected + ')');
     };
 
     // Check for globally required packages
@@ -134,49 +139,96 @@ module.exports = function(grunt) {
 
     // Install latest compatible node version
     var nvmInstall = function() {
-      var command = nvmInit + 'nvm install ' + expected;
+      nvmLs('remote', function() {
 
-      if (options.copyPackages) {
-        command += ' && nvm copy-packages ' + actual;
+        bestMatch = semver.maxSatisfying(remotes, expected),
+        nvmUse = nvmInit + 'nvm use ' + bestMatch;
+
+        var command = nvmInit + 'nvm install ' + bestMatch;
+
+        if (options.copyPackages) {
+          command += ' && nvm copy-packages ' + actual;
+        }
+  
+        childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
+          if (err) { throw err ;}
+          var nodeVersion = stdout.split(' ')[3];
+          grunt.log.ok('Installed node v' + bestMatch);
+          printVersion(nodeVersion);
+          extendExec();
+          checkPackages(options.globals);
+        });
+      })
+    };
+
+    // Check for available node versions
+    var nvmLs = function(loc, callback) {
+      var command = nvmInit + 'nvm ls';
+
+      if (loc === 'remote') {
+        command += '-remote';
       }
 
-      childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
-        if (err) { throw err ;}
-        var nodeVersion = stdout.split(' ')[3];
-        grunt.log.ok('Installed node ' + nodeVersion);
-        printVersion(nodeVersion);
-        checkPackages(options.globals);
-      });
+      childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
+        if (stderr.indexOf('No such file or directory') !== -1) {
+          grunt[options.errorLevel]('Expected node ' + expected + ', but found v' + actual + '\nNVM does not appear to be installed.\nPlease install (https://github.com/creationix/nvm#installation), or update the NVM path.');
+        } 
+
+        var data = stripColorCodes(stdout.toString()),
+            available = data.split('\n');
+
+        for (var i = 0; i < available.length; i++) {
+          // Trim whitespace
+          available[i] = available[i].replace(/\s/g, '');
+          // Validate
+          var ver = semver.valid(available[i]);
+
+          if (ver) {
+            if (loc === 'remote') {
+              remotes.push(ver);
+            } else if (loc === 'local') {
+              locals.push(ver);
+            }
+          }
+        }
+        
+        callback();
+      })
     };
 
     // Check for compatible node version
     var checkVersion = function() {
-      childProcess.exec(nvmUse, cmdOpts,function(err, stdout, stderr) {
-        // Make sure a node version is intalled that satisfies
-        // the projects required engine. If not, prompt to install.
-        if (stderr.indexOf('No such file or directory') !== -1) {
-          grunt[options.errorLevel]('Expected node v' + expected + ', but found ' + actual + '\nNVM does not appear to be installed.\nPlease install (https://github.com/creationix/nvm#installation), or update the NVM path.');
-        } 
-        if (stdout.indexOf('N/A version is not installed yet') !== -1) {
+      // Make sure a node version is intalled that satisfies
+      // the projects required engine. If not, prompt to install.
+      nvmLs('local', function() {
+        var matches = semver.maxSatisfying(locals, expected);
+
+        if (matches) {
+          bestMatch = matches,
+          nvmUse = nvmInit + 'nvm use ' + bestMatch;
+
+          childProcess.exec(nvmUse, cmdOpts,function(err, stdout, stderr) {
+            printVersion(stdout.split(' ')[3]);
+            extendExec();
+            checkPackages(options.globals);
+          })
+        } else {
           if (options.alwaysInstall) {
             nvmInstall();
           } else {
             askInstall();
           }
-        } else {
-          printVersion(stdout.split(' ')[3]);
-          checkPackages(options.globals);
         }
       });
     };
 
     if (result === true) {
       grunt.log.writeln('Using node ' + actual);
-      grunt.log.writeln('(Project requires node v' + expected + ')');
+      grunt.log.writeln('(Project requires node ' + expected + ')');
       checkPackages(options.globals);
     } else {
       if (!options.nvm) {
-        grunt[options.errorLevel]('Expected node v' + expected + ', but found ' + actual);
+        grunt[options.errorLevel]('Expected node ' + expected + ', but found v' + actual);
       } else {
         checkVersion();
       }
