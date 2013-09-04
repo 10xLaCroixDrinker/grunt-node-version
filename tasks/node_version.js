@@ -26,6 +26,7 @@ module.exports = function(grunt) {
         remotes = [],
         bestMatch = '',
         nvmUse = '',
+        nvmPath = home + '/.nvm/nvm.sh',
         options = this.options({
           alwaysInstall: false,
           copyPackages: false,
@@ -34,10 +35,9 @@ module.exports = function(grunt) {
           globals: [],
           maxBuffer: 200*1024,
           nvm: true,
-          nvmPath: home + '/.nvm/nvm.sh',
           override: ''
         }),
-        nvmInit = '. ' + options.nvmPath + ' && ',
+        nvmInit = '. ' + nvmPath + ' && ',
         cmdOpts = {
           cwd: process.cwd(),
           env: process.env,
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
   
         grunt.config.set('exec', exec);
       }
-    }
+    };
 
     // Validate options
     if (options.errorLevel !== 'warn' &&
@@ -76,6 +76,25 @@ module.exports = function(grunt) {
     var printVersion = function(using) {
       grunt.log.write('Switched from node v' + actual + ' to ' + using);
       grunt.log.writeln('(Project requires node ' + expected + ')');
+    };
+
+    // Check for NVM
+    var checkNVM = function(callback) {
+      var command = '. ' + nvmPath;
+
+      childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
+        if (stderr.indexOf('No such file or directory') !== -1) {
+          if (nvmPath === home + '/.nvm/nvm.sh') {
+            nvmPath = home + '/nvm/nvm.sh';
+            nvmInit = '. ' + nvmPath + ' && ';
+            checkNVM(callback);
+          } else {
+            grunt[options.errorLevel]('Expected node ' + expected + ', but found v' + actual + '\nNVM does not appear to be installed.\nPlease install (https://github.com/creationix/nvm#installation), or update the NVM path.');
+          }
+        } else {
+          callback();
+        }
+      });
     };
 
     // Check for globally required packages
@@ -144,7 +163,7 @@ module.exports = function(grunt) {
     var nvmInstall = function() {
       nvmLs('remote', function() {
 
-        bestMatch = semver.maxSatisfying(remotes, expected),
+        bestMatch = semver.maxSatisfying(remotes, expected);
         nvmUse = nvmInit + 'nvm use ' + bestMatch;
 
         var command = nvmInit + 'nvm install ' + bestMatch;
@@ -161,7 +180,7 @@ module.exports = function(grunt) {
           extendExec();
           checkPackages(options.globals);
         });
-      })
+      });
     };
 
     // Check for available node versions
@@ -173,10 +192,6 @@ module.exports = function(grunt) {
       }
 
       childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
-        if (stderr.indexOf('No such file or directory') !== -1) {
-          grunt[options.errorLevel]('Expected node ' + expected + ', but found v' + actual + '\nNVM does not appear to be installed.\nPlease install (https://github.com/creationix/nvm#installation), or update the NVM path.');
-        } 
-
         var data = stripColorCodes(stdout.toString()),
             available = data.split('\n');
 
@@ -196,7 +211,7 @@ module.exports = function(grunt) {
         }
         
         callback();
-      })
+      });
     };
 
     // Check for compatible node version
@@ -207,14 +222,14 @@ module.exports = function(grunt) {
         var matches = semver.maxSatisfying(locals, expected);
 
         if (matches) {
-          bestMatch = matches,
+          bestMatch = matches;
           nvmUse = nvmInit + 'nvm use ' + bestMatch;
 
           childProcess.exec(nvmUse, cmdOpts,function(err, stdout, stderr) {
             printVersion(stdout.split(' ')[3]);
             extendExec();
             checkPackages(options.globals);
-          })
+          });
         } else {
           if (options.alwaysInstall) {
             nvmInstall();
@@ -233,7 +248,7 @@ module.exports = function(grunt) {
       if (!options.nvm) {
         grunt[options.errorLevel]('Expected node ' + expected + ', but found v' + actual);
       } else {
-        checkVersion();
+        checkNVM(checkVersion);
       }
     }
 

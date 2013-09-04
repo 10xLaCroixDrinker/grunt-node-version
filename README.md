@@ -35,7 +35,6 @@ grunt.initConfig({
       globals: [],
       maxBuffer: 200*1024,
       nvm: true,
-      nvmPath: '~/.nvm/nvm.sh',
       override: ''
     }
   }
@@ -86,12 +85,6 @@ Default value: `true`
 
 A boolean that determines whether to attempt to use/install a version of node compatible with the project using [NVM](https://github.com/creationix/nvm). If set to `false`, the plugin will just print an error if the wrong node version is being used.
 
-#### options.nvmPath
-Type: `String`
-Default value: `'~/.nvm/nvm.sh'`
-
-A string that represents the path to your NVM install.
-
 #### options.override
 Type: `String`
 Default value: `''`
@@ -111,3 +104,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 0.2.4 Better logging
 - 0.3.0 Added support for version ranges
 - 0.3.1 Added `override` option
+- 0.4.0 Removed `nvmPath` option. Made `~/nvm/nvm.sh` work in addition to `~/.nvm/nvm.sh`
