@@ -109,7 +109,7 @@ module.exports = function(grunt) {
         childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
           if (err) { throw err ;}
 
-          if (stdout.indexOf('─ (empty)') !== -1) {
+          if (stdout.indexOf('â”€ (empty)') !== -1) {
             npmInstall(thisPackage, function() {
               checkPackages(packages);        
             });
@@ -192,15 +192,14 @@ module.exports = function(grunt) {
       }
 
       childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
-        var data = stripColorCodes(stdout.toString()),
-            available = data.split('\n');
+        var data = stripColorCodes(stdout.toString()).replace(/\s+/g, '|'),
+            available = data.split('|');
 
         for (var i = 0; i < available.length; i++) {
           // Trim whitespace
           available[i] = available[i].replace(/\s/g, '');
           // Validate
           var ver = semver.valid(available[i]);
-
           if (ver) {
             if (loc === 'remote') {
               remotes.push(ver);

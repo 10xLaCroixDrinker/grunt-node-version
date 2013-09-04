@@ -105,3 +105,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 0.3.0 Added support for version ranges
 - 0.3.1 Added `override` option
 - 0.4.0 Removed `nvmPath` option. Made `~/nvm/nvm.sh` work in addition to `~/.nvm/nvm.sh`
+- 0.4.1 Fixed bug in older versions of NVM
