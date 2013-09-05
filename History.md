@@ -1,5 +1,5 @@
 ## Release History
-- **[1.0.0](https://github.com/jking90/grunt-node-version/tree/v1.0.0)** 
+- **[1.0.0](https://github.com/jking90/grunt-node-version/tree/v1.0.0)** (Sept 5, 2013)
     - Removed `copyPackages` and `extendExec` options for lack of use case
 - 0.4.1 
     - Fixed bug in older versions of NVM
