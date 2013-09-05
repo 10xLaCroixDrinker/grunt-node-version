@@ -1,5 +1,5 @@
 ## Release History
-- 1.0.0 
+- **1.0.0** 
     - Removed `copyPackages` and `extendExec` options for lack of use case
 - 0.4.1 
     - Fixed bug in older versions of NVM
@@ -23,5 +23,5 @@
     - Switched from `source` to `.`
 - 0.1.1
     - Added `alwaysInstall` option
-- 0.1.0
+- **0.1.0**
     - First release
