@@ -29,9 +29,7 @@ grunt.initConfig({
   node_version: {
     options: {
       alwaysInstall: false,
-      copyPackages: false,
       errorLevel: 'fatal',
-      extendExec: true,
       globals: [],
       maxBuffer: 200*1024,
       nvm: true,
@@ -41,6 +39,8 @@ grunt.initConfig({
 })
 ```
 
+Prepend any task lists that contain [grunt-exec](https://github.com/jharding/grunt-exec) tasks with the `node_version` task, and it will extend `grunt-exec` tasks by prepending them with an `nvm use` command when necessary.
+
 ### Options
 
 #### options.alwaysInstall
@@ -49,23 +49,11 @@ Default value: `false`
 
 A boolean that determines whether to install the latest compatible version of node without a prompt (default behavior prompts user to install). This is primarily intended to be used for deployment.
 
-#### options.copyPackages
-Type: `Boolean`
-Default value: `false`
-
-A boolean that determines whether or not to copy globally installed packages  to a the new version of node after it's installed.
-
 #### options.errorLevel
 Type: `String`
 Default value: `'fatal'`
 
 The level of error given when the wrong node version is being used. Accepted values are `'warn'` and `'fatal'`. Warn can can be overidden with `--force`, fatal cannot.
-
-#### options.extendExec
-Type: `Boolean`
-Default value: `true`
-
-A boolean that determines if `grunt-node-version` should extend [`grunt-exec`](https://github.com/jharding/grunt-exec).
 
 #### options.globals
 Type: `Array`
@@ -95,14 +83,4 @@ If you want to override the version specified in your project's `package.json`, 
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-- 0.1.0 First release
-- 0.1.1 Added `alwaysInstall` option
-- 0.2.0 Added `copyPackages`, `globals` and `maxBuffer` options. Switched from `source` to `.`
-- 0.2.1 Made more portable by switching from `~` to `process.env.HOME`
-- 0.2.2 Some code cleaning
-- 0.2.3 Efficiency changes
-- 0.2.4 Better logging
-- 0.3.0 Added support for version ranges
-- 0.3.1 Added `override` option
-- 0.4.0 Removed `nvmPath` option. Made `~/nvm/nvm.sh` work in addition to `~/.nvm/nvm.sh`
-- 0.4.1 Fixed bug in older versions of NVM
+See [History.md](https://github.com/jking90/grunt-node-version/blob/master/History.md)

@@ -29,9 +29,7 @@ module.exports = function(grunt) {
         nvmPath = home + '/.nvm/nvm.sh',
         options = this.options({
           alwaysInstall: false,
-          copyPackages: false,
           errorLevel: 'fatal',
-          extendExec: true,
           globals: [],
           maxBuffer: 200*1024,
           nvm: true,
@@ -51,7 +49,7 @@ module.exports = function(grunt) {
 
     // Extend grunt-exec
     var extendExec = function() {
-      if (options.extendExec && !result) {
+      if (!result) {
         var exec = grunt.config.get('exec');
   
         for (var key in exec) {
@@ -168,10 +166,6 @@ module.exports = function(grunt) {
 
         var command = nvmInit + 'nvm install ' + bestMatch;
 
-        if (options.copyPackages) {
-          command += ' && nvm copy-packages ' + actual;
-        }
-  
         childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
           if (err) { throw err ;}
           var nodeVersion = stdout.split(' ')[3];

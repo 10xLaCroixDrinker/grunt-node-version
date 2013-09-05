@@ -1,0 +1,27 @@
+## Release History
+- 1.0.0 
+    - Removed `copyPackages` and `extendExec` options for lack of use case
+- 0.4.1 
+    - Fixed bug in older versions of NVM
+- 0.4.0 
+    - Removed `nvmPath` option
+    - Made `~/nvm/nvm.sh` work in addition to `~/.nvm/nvm.sh`
+- 0.3.1 
+    - Added `override` option
+- 0.3.0 
+    - Added support for version ranges
+- 0.2.4
+    - Better logging
+- 0.2.3 
+    - Efficiency changes
+- 0.2.2
+    - Some code cleaning
+- 0.2.1
+    - Made more portable by switching from `~` to `process.env.HOME`
+- 0.2.0
+    - Added `copyPackages`, `globals` and `maxBuffer` options
+    - Switched from `source` to `.`
+- 0.1.1
+    - Added `alwaysInstall` option
+- 0.1.0
+    - First release
