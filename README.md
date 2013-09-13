@@ -1,6 +1,7 @@
-[![NPM version](https://badge.fury.io/js/grunt-node-version.png)](https://npmjs.org/package/grunt-node-version "View this project on NPM")
-
 # grunt-node-version
+
+[![NPM version](https://badge.fury.io/js/grunt-node-version.png)](https://npmjs.org/package/grunt-node-version "View this project on NPM")
+[![Dependency Status](https://gemnasium.com/jking90/grunt-node-version.png)](https://gemnasium.com/jking90/grunt-node-version)
 
 > A grunt task to ensure you are using the node version required by your project's package.json
 
