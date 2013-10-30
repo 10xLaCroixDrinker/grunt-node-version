@@ -3,6 +3,7 @@
 [![NPM version](https://badge.fury.io/js/grunt-node-version.png)](https://npmjs.org/package/grunt-node-version "View this project on NPM")
 [![Dependency Status](https://gemnasium.com/jking90/grunt-node-version.png)](https://gemnasium.com/jking90/grunt-node-version)
 [![Build Status](https://travis-ci.org/jking90/grunt-node-version.png?branch=master)](https://travis-ci.org/jking90/grunt-node-version)
+[![Gittip donate button](http://img.shields.io/gittip/jking90.png)](https://www.gittip.com/jking90/ "Donate weekly to this project using Gittip")
 
 > A grunt task to ensure you are using the node version required by your project's package.json
 
