@@ -1,12 +1,9 @@
 {
   "name": "grunt-node-version",
   "description": "A grunt task to ensure you are using the node version required by your project's package.json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/jking90/grunt-node-version",
-  "author": {
-    "name": "Jimmy King",
-    "email": "hello@jimmyking.me"
-  },
+  "author": "Jimmy King <hello@jimmyking.me> (http://jimmyking.me)",
   "repository": {
     "type": "git",
     "url": "git://github.com/jking90/grunt-node-version.git"
@@ -14,12 +11,7 @@
   "bugs": {
     "url": "https://github.com/jking90/grunt-node-version/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jking90/grunt-node-version/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "Gruntfile.js",
   "engines": {
     "node": ">= 0.8.0"
@@ -28,10 +20,8 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-clean": "~0.4.0",
-    "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt": "~0.4.1"
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.2"
   },
   "peerDependencies": {
     "grunt": "~0.4.1"
@@ -45,8 +35,8 @@
     "manager"
   ],
   "dependencies": {
-    "semver": "~2.1.0",
-    "prompt": "~0.2.11",
-    "stripcolorcodes": "~0.1.0"
+    "prompt": "^0.2.14",
+    "semver": "^5.0.1",
+    "stripcolorcodes": "^0.1.0"
   }
 }
