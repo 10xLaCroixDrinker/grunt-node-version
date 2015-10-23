@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "prompt": "^0.2.14",
-    "semver": "^5.0.1",
+    "semver": "^5.0.3",
     "stripcolorcodes": "^0.1.0"
   }
 }
