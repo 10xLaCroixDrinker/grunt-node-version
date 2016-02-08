@@ -35,7 +35,7 @@
     "manager"
   ],
   "dependencies": {
-    "prompt": "^0.2.14",
+    "prompt": "^0.3.0",
     "semver": "^5.1.0",
     "stripcolorcodes": "^0.1.0"
   }
