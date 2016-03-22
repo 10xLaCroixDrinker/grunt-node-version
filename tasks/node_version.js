@@ -51,11 +51,11 @@ module.exports = function(grunt) {
     var extendExec = function() {
       if (!result) {
         var exec = grunt.config.get('exec');
-  
+
         for (var key in exec) {
           exec[key].cmd = nvmUse + ' && ' + exec[key].cmd;
         }
-  
+
         grunt.config.set('exec', exec);
       }
     };
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
     }
 
     var printVersion = function(using) {
-      grunt.log.write('Switched from node v' + actual + ' to ' + using);
+      grunt.log.writeln('Switched from node v' + actual + ' to ' + using);
       grunt.log.writeln('(Project requires node ' + expected + ')');
     };
 
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
 
           if (stdout.indexOf('â”€ (empty)') !== -1) {
             npmInstall(thisPackage, function() {
-              checkPackages(packages);        
+              checkPackages(packages);
             });
           } else {
             checkPackages(packages);
@@ -154,7 +154,7 @@ module.exports = function(grunt) {
           grunt[options.errorLevel]('Expected node v' + expected + ', but found ' + actual);
         }
       });
-    
+
     };
 
     // Install latest compatible node version
@@ -202,7 +202,7 @@ module.exports = function(grunt) {
             }
           }
         }
-        
+
         callback();
       });
     };
