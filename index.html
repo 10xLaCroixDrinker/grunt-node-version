@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>grunt-node-version</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.2.0/css/reveal.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.2.0/css/theme/beige.min.css" id="theme">
+    <link rel="stylesheet" href="css/reveal.css">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.2.0/lib/css/zenburn.min.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.2.0/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.min.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+        <section>
+    <h2>The Problem</h2>
+
+    <p class="fragment">Different projects require different node versions</p>
+
+    <p class="fragment">Not all projects have documentation (README.md)</p>
+
+    <p class="fragment">People don't always read documentation</p>
+
+    <p class="fragment">People that do read it, still forget to switch versions</p>
+
+    <p class="fragment">Time is wasted thinking projects are broken that aren't</p>
+  </section>
+
+  <section data-markdown>
+    <script type="text/template">
+## The Solution
+
+Use Grunt to force
+
+the right node version
+    </script>
+  </section>
+
+  <section data-markdown>
+    <script type="text/template">
+## grunt-node-version
+
+A Grunt plugin for controlling your node version based on your project's package.json
+
+by [Jimmy King](http://jimmyking.me)
+    </script>
+  </section>
+
+  <section>
+    <section>
+      <h2>grunt-node-version</h2>
+      <p>has 3 vital dependencies</p>
+    </section>
+
+    <section>
+      <h2><span class="green">grunt</span>-node-version</h2>
+      <img class="logo" src="img/grunt-logo.png" alt="Grunt Logo" />
+
+      <p class="fragment"><a href="http://gruntjs.com/">Grunt</a> is a task runner (read: automation tool).</p>
+
+      <p class="fragment">It allows us to ensure that running projects, unit-tests, and deploys are all done the same way.</p>
+    </section>
+
+    <section>
+      <h2>grunt-<span class="green">node</span>-version</h2>
+      <img class="logo" src="img/node-logo.png" alt="Node.js Logo" />
+
+      <p class="fragment"><a href="http://nodejs.org/">Node.js</a> is a platform that uses the JavaScript runtime for building web applications.</p>
+
+      <p class="fragment">A lot of Node.js projects depend on a specific version of Node.js.</p>
+
+      <p class="fragment">Many of our projects at <a href="http://meltmedia.com">meltmedia</a> run on Node.js.</p>
+    </section>
+
+    <section>
+      <h2>grunt-node-<span class="green">version</span></h2>
+      <h2 class="logo">NVM</h2>
+
+      <p class="fragment"><a href="https://github.com/creationix/nvm">NVM</a> (Node Version Manager) is a command-line tool for maintaining multiple versions of Node.js on your system</p>
+
+      <p class="fragment">A developer using NVM can easily install and switch between many versions of Node.js.</p>
+    </section>
+
+  </section>
+
+  <section data-markdown>
+    <script type="text/template">
+## How?
+
+If your project is already using
+
+[Grunt](http://gruntjs.com/), it's as easy as:
+
+```
+$ npm install --save-dev grunt-node-version
+```
+
+(sort of)
+    </script>
+  </section>
+
+  <section>
+    <section>
+      <h2>Implementation</h2>
+
+      <ol>
+        <li class="fragment">Define a node version in your package.json</li>
+        <li class="fragment">Load the task</li>
+        <li class="fragment">Prepend the task to each task list that is node version dependent</li>
+      </ol>
+    </section>
+
+    <section data-markdown>
+      <script type="text/template">
+### Example package.json
+
+```javascript
+{
+  "name": "example",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "docpad": "6.44.x"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-exec": "~0.4.0",
+    "grunt-node-version": "~1.0.0"
+  }
+}
+```
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+### Example Gruntfile.js
+
+```javascript
+module.exports = function(grunt) {
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    exec: {
+      run: {
+        cmd: './node_modules/.bin/docpad run'
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks('grunt-node-version');
+  grunt.registerTask('run', ['node_version', 'exec:run']);
+};
+```
+      </script>
+    </section>
+  </section>
+
+  <section>
+    <section data-markdown>
+      <script type="text/template">
+## Use
+
+```
+$ grunt run
+```
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## Already using a compatible node version
+
+```no-highlight
+Running "node_version" task
+Using node 0.10.17
+(Project requires node >=0.10.0-0 <0.11.0-0)
+
+Running "exec:run" (exec) task
+info: Welcome to DocPad v6.44.0
+...
+```
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## Using an incompatible version, but with a compatible version already installed via NVM
+
+```no-highlight
+Running "node_version" task
+Switched from node v0.8.25 to v0.10.17
+(Project requires node >=0.10.0-0 <0.11.0-0)
+
+Running "exec:run" (exec) task
+Now using node v0.10.17
+info: Welcome to DocPad v6.44.0
+...
+```
+      </script>
+    </section>
+    <section>
+      <h2>Using an incompatible version, with no compatible versions installed</h2>
+
+      <pre class="highlight"><code class="no-highlight">Running "node_version" task
+prompt: You do not have any node versions installed that satisfy this
+project's requirements (>=0.10.0-0 <0.11.0-0). Would you like to
+install the latest compatible version? (y/n):</code></pre>
+
+      <div class="fragment">
+        <pre class="highlight"><code class="no-highlight">$ no</code></pre>
+        <pre class="highlight"><code class="no-highlight">Fatal error: Expected node >=0.10.0-0 <0.11.0-0, but found 0.8.25</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>or</h2>
+
+      <div class="fragment">
+        <pre class="highlight"><code class="no-highlight">$ yes</code></pre>
+        <pre class="highlight"><code class="no-highlight">>> Installed node v0.10.17
+Switched from node v0.8.25 to v0.10.17
+(Project requires node >=0.10.0-0 <0.11.0-0)
+
+Running "exec:run" (exec) task
+Now using node v0.10.17
+info: Welcome to DocPad v6.44.0
+...</code></pre>
+      </div>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## Using an incompatible version, without NVM installed
+
+```no-highlight
+Running "node_version" task
+Fatal error: Expected node >=0.10.0-0 <0.11.0-0, but found v0.8.25
+NVM does not appear to be installed.
+Please install (https://github.com/creationix/nvm#installation),
+or update the NVM path.
+```
+      </script>
+    </section>
+  </section>
+
+  <section>
+    <section data-markdown>
+      <script type="text/template">
+## Options
+
+There are 6 options available:
+
+- alwaysInstall
+- errorLevel
+- globals
+- maxBuffer
+- nvm
+- override
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## Option Name
+
+```javascript
+option: 'default value'
+```
+
+Description
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## alwaysInstall
+
+```javascript
+alwaysInstall: false
+```
+
+If set to true, grunt-node-version will always install a new version of node when a compatible one is not available, without prompting the user.
+
+This is particularly useful for continuous integration
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## errorLevel
+
+```javascript
+errorLevel: 'fatal'
+```
+
+Errors from the plugin are fatal by default (kills the process), but if this is set to warn, errors can be overriden with --force.
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## globals
+
+```javascript
+globals: []
+```
+
+If you need certain node modules to be installed globally, include them in this array. The plugin will check for them every time node_version is run, and install any that are missing.
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## maxBuffer
+
+```javascript
+maxBuffer: 200*1024
+```
+
+This defines the maximum standard output the processes can hold without dying. It may need to be increased for old versions of node (e.g. 0.4.x) and NVM
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## nvm
+
+```javascript
+nvm: true
+```
+
+Setting this to false will disable all NVM-related features.
+      </script>
+    </section>
+    <section data-markdown>
+      <script type="text/template">
+## override
+
+```javascript
+override: ''
+```
+
+This option allows you to override the node version provided in package.json. Its primary purpose is for testing.
+      </script>
+    </section>
+  </section>
+
+  <section>
+    <h2>When can I use it?</h2>
+
+    <p class="big fragment">Now.</p>
+
+    <p class="fragment"><a href="https://npmjs.org/package/grunt-node-version">grunt-node-version</a> is already being used on at least 4 of our <a href="http://docpad.org/">DocPad</a> sites</p>
+  </section>
+
+  <section>
+    <h2>Nicholas Cage is very excited to implement this plugin</h2>
+
+    <img src="http://gifs.jimmy.s3.amazonaws.com/yeahyeahyeah.gif" alt="Nicholas Cage being way too excited about a Grunt plugin" />
+  </section>
+
+  <section>
+    <h2>Questions?</h2>
+  </section>
+
+      </div>
+
+
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.2.0/lib/js/head.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.2.0/js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: '//cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'js/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'js/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'js/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-36088194-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
