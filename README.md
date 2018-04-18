@@ -1,3 +1,6 @@
+# Seeking new maintainer!
+> Open an issue if you'd like to take this project over.
+
 # grunt-node-version
 
 [![NPM version](https://badge.fury.io/js/grunt-node-version.png)](https://npmjs.org/package/grunt-node-version "View this project on NPM")
