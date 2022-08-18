@@ -1,8 +1,8 @@
 /*
  * grunt-node-version
- * https://github.com/jking90/grunt-node-version
+ * https://github.com/10xLaCroixDrinker/grunt-node-version
  *
- * Copyright (c) 2013 Jimmy King
+ * Copyright (c) 2013 Jamie King
  * Licensed under the MIT license.
  */
 
