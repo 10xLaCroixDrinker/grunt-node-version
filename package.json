@@ -2,14 +2,14 @@
   "name": "grunt-node-version",
   "description": "A grunt task to ensure you are using the node version required by your project's package.json",
   "version": "1.0.2",
-  "homepage": "https://github.com/jking90/grunt-node-version",
-  "author": "Jimmy King <hello@jimmyking.me> (http://jimmyking.me)",
+  "homepage": "https://github.com/10xLaCroixDrinker/grunt-node-version",
+  "author": "Jamie King <hello@jamieking.me> (http://jamieking.me)",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jking90/grunt-node-version.git"
+    "url": "git://github.com/10xLaCroixDrinker/grunt-node-version.git"
   },
   "bugs": {
-    "url": "https://github.com/jking90/grunt-node-version/issues"
+    "url": "https://github.com/10xLaCroixDrinker/grunt-node-version/issues"
   },
   "license": "MIT",
   "main": "Gruntfile.js",
