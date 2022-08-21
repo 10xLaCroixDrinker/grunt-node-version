@@ -4,9 +4,9 @@
 # grunt-node-version
 
 [![NPM version](https://badge.fury.io/js/grunt-node-version.png)](https://npmjs.org/package/grunt-node-version "View this project on NPM")
-[![Dependency Status](https://gemnasium.com/jking90/grunt-node-version.png)](https://gemnasium.com/jking90/grunt-node-version)
-[![Build Status](https://travis-ci.org/jking90/grunt-node-version.png?branch=main)](https://travis-ci.org/jking90/grunt-node-version)
-[![Gittip donate button](http://img.shields.io/gittip/jking90.png)](https://www.gittip.com/jking90/ "Donate weekly to this project using Gittip")
+[![Dependency Status](https://gemnasium.com/10xLaCroixDrinker/grunt-node-version.png)](https://gemnasium.com/10xLaCroixDrinker/grunt-node-version)
+[![Build Status](https://travis-ci.org/10xLaCroixDrinker/grunt-node-version.png?branch=main)](https://travis-ci.org/10xLaCroixDrinker/grunt-node-version)
+[![Gittip donate button](http://img.shields.io/gittip/10xLaCroixDrinker.png)](https://www.gittip.com/10xLaCroixDrinker/ "Donate weekly to this project using Gittip")
 
 > A grunt task to ensure you are using the node version required by your project's package.json
 
@@ -89,4 +89,4 @@ If you want to override the version specified in your project's `package.json`, 
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-See [History.md](https://github.com/jking90/grunt-node-version/blob/main/History.md)
+See [History.md](https://github.com/10xLaCroixDrinker/grunt-node-version/blob/main/History.md)
