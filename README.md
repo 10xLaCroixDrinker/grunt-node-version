@@ -1,12 +1,6 @@
-# Seeking new maintainer!
-> Open an issue if you'd like to take this project over.
-
 # grunt-node-version
 
 [![NPM version](https://badge.fury.io/js/grunt-node-version.png)](https://npmjs.org/package/grunt-node-version "View this project on NPM")
-[![Dependency Status](https://gemnasium.com/10xLaCroixDrinker/grunt-node-version.png)](https://gemnasium.com/10xLaCroixDrinker/grunt-node-version)
-[![Build Status](https://travis-ci.org/10xLaCroixDrinker/grunt-node-version.png?branch=main)](https://travis-ci.org/10xLaCroixDrinker/grunt-node-version)
-[![Gittip donate button](http://img.shields.io/gittip/10xLaCroixDrinker.png)](https://www.gittip.com/10xLaCroixDrinker/ "Donate weekly to this project using Gittip")
 
 > A grunt task to ensure you are using the node version required by your project's package.json
 
